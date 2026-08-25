@@ -31,29 +31,29 @@ public class OrdenService {
 
         orden.setItems(items);
         ordenRepository.save(orden);
-        return  convertirADTO(orden);
+        return  mapToDTO(orden);
     }
 
     public List<OrdenDTO> findOrdenes(){
         return ordenRepository.findAll().stream()
-                .map(this::convertirADTO)
+                .map(this::mapToDTO)
                 .toList();
     }
 
     public OrdenDTO findOrden(String id){
-        return ordenRepository.findById(id).map(this::convertirADTO).orElse(null);
+        return ordenRepository.findById(id).map(this::mapToDTO).orElse(null);
     }
 
     public OrdenDTO saveOrden(Orden orden){
         ordenRepository.save(orden);
-        return convertirADTO(orden);
+        return mapToDTO(orden);
     }
 
     public void deleteOrden(String id){
         ordenRepository.deleteById(id);
     }
 
-    private OrdenDTO convertirADTO(Orden o) {
+    private OrdenDTO mapToDTO(Orden o) {
         List <OrdenItemDTO> itemsDTO = o.getItems().stream().map(item -> new OrdenItemDTO(item.getProductoId(), item.getCantidad()))
                 .toList();
 

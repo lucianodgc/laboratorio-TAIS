@@ -6,4 +6,6 @@ import uy.edu.utec.laboratoriotais.models.Producto;
 public interface ProductoRepository extends MongoRepository<Producto, String>
 {
     boolean existsByNombre(String nombre);
+
+    boolean existsByNombreAndIdNot(String nombre, String id);
 }

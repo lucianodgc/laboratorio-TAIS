@@ -19,8 +19,7 @@ public class ProductoController {
 
     @GetMapping()
     public ResponseEntity<List<ProductoDTO>> getAllProductos() {
-        List<ProductoDTO> productos = productoService.findProductos();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findProductos());
     }
 
     @GetMapping("/{id}")
@@ -31,6 +30,17 @@ public class ProductoController {
     @PostMapping()
     public ResponseEntity<ProductoDTO> postProducto(@Valid @RequestBody ProductoDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.createProducto(dto));
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductoDTO> putProducto(@PathVariable String id, @Valid @RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoService.updateProducto(id, dto));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductoDTO> patchProducto(@PathVariable String id, @RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoService.patchProducto(id, dto));
     }
 
 }

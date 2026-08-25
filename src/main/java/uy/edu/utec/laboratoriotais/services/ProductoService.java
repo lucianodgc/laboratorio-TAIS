@@ -30,36 +30,114 @@ public class ProductoService {
         producto.setStock(dto.getStock());
         producto.setImagenes(dto.getImagenes());
         productoRepository.save(producto);
-        return convertirADTO(producto);
+        return mapToDTO(producto);
     }
 
     public List<ProductoDTO> findProductos(){
         List<Producto> productos = productoRepository.findAll();
-        return productos.stream().map(this::convertirADTO).toList();
+        return productos.stream().map(this::mapToDTO).toList();
     }
 
     public ProductoDTO findProducto(String id){
         return productoRepository.findById(id)
-                .map(this::convertirADTO)
+                .map(this::mapToDTO)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id
                 ));
     }
 
-    public ProductoDTO saveProducto(Producto producto){
-        productoRepository.save(producto);
-        return convertirADTO(producto);
+    public ProductoDTO updateProducto(String id, ProductoDTO dto){
+        if (!productoRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id
+            );
+        }
+        if (productoRepository.existsByNombreAndIdNot(dto.getNombre(), id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Ya existe otro producto registrado con ese nombre"
+            );
+        }
+        dto.setId(id);
+        Producto guardado = productoRepository.save(mapToEntity(dto));
+        return mapToDTO(guardado);
+    }
+
+
+    public ProductoDTO patchProducto(String id, ProductoDTO dto) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id
+                ));
+
+        if (dto.getNombre() != null) {
+            if (dto.getNombre().isBlank()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "El nombre no puede estar vacío"
+                );
+            }
+            if (productoRepository.existsByNombreAndIdNot(dto.getNombre(), id)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Ya existe un producto con ese nombre"
+                );
+            }
+            producto.setNombre(dto.getNombre());
+        }
+
+        if (dto.getDescripcion() != null) {
+            if (dto.getDescripcion().isBlank()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "La descripción no puede estar vacía"
+                );
+            }
+            producto.setDescripcion(dto.getDescripcion());
+        }
+
+        if (dto.getPrecio() != null) {
+            if (dto.getPrecio() <= 0) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "El precio debe ser mayor a 0"
+                );
+            }
+            producto.setPrecio(dto.getPrecio());
+        }
+
+        if (dto.getStock() != null) {
+            if (dto.getStock() < 0) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "El stock no puede ser negativo"
+                );
+            }
+            producto.setStock(dto.getStock());
+        }
+
+        if (dto.getImagenes() != null) {
+            producto.setImagenes(dto.getImagenes());
+        }
+
+        Producto guardado = productoRepository.save(producto);
+        return mapToDTO(guardado);
     }
 
     public void deleteProducto(String id){
         productoRepository.deleteById(id);
     }
 
-    private ProductoDTO convertirADTO(Producto p) {
-        List<String> imagenesUrl = (p.getImagenes() == null)
+    private ProductoDTO mapToDTO(Producto producto) {
+        List<String> imagenesUrl = (producto.getImagenes() == null)
                 ? List.of()
-                : new ArrayList<>(p.getImagenes());
-        return new ProductoDTO(p.getId(), p.getNombre(), p.getDescripcion(), p.getPrecio(), p.getStock(), imagenesUrl);
+                : new ArrayList<>(producto.getImagenes());
+        return new ProductoDTO(producto.getId(), producto.getNombre(), producto.getDescripcion(), producto.getPrecio(), producto.getStock(), imagenesUrl);
+    }
+
+    private Producto mapToEntity(ProductoDTO dto) {
+        Producto producto = new Producto();
+        producto.setId(dto.getId());
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setPrecio(dto.getPrecio());
+        producto.setStock(dto.getStock());
+        producto.setImagenes(dto.getImagenes());
+        return producto;
     }
 
 }

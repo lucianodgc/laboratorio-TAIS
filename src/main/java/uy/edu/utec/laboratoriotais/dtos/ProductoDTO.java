@@ -1,6 +1,7 @@
 package uy.edu.utec.laboratoriotais.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,10 @@ public class ProductoDTO {
     @NotBlank
     private String descripcion;
     @Positive
+    @NotNull
     private Double precio;
     @Positive
+    @NotNull
     private Integer stock;
     private List<String> imagenes;
 
