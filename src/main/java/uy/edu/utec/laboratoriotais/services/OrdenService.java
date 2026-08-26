@@ -7,7 +7,9 @@ import uy.edu.utec.laboratoriotais.dtos.OrdenItemDTO;
 import uy.edu.utec.laboratoriotais.models.Estado;
 import uy.edu.utec.laboratoriotais.models.Orden;
 import uy.edu.utec.laboratoriotais.models.OrdenItem;
+import uy.edu.utec.laboratoriotais.models.Producto;
 import uy.edu.utec.laboratoriotais.repositories.OrdenRepository;
+import uy.edu.utec.laboratoriotais.repositories.ProductoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class OrdenService {
 
     private final OrdenRepository ordenRepository;
+    private final ProductoRepository productoRepository;
 
     public OrdenDTO createOrden(OrdenDTO dto){
         Orden orden = new Orden();
@@ -26,7 +29,13 @@ public class OrdenService {
         orden.setEstado(Estado.CREADO);
         orden.setFechaCreacion(LocalDateTime.now());
         List<OrdenItem> items = dto.getItems().stream()
-                .map(itemDTO -> new OrdenItem(itemDTO.getCantidad(), itemDTO.getProductoId()))
+                .map(itemDTO -> {
+                    Double precio = productoRepository.findById(itemDTO.getProductoId())
+                            .map(Producto::getPrecio)
+                            .orElse(0.0);
+
+                    return new OrdenItem(itemDTO.getCantidad(), itemDTO.getProductoId(), precio);
+                })
                 .toList();
 
         orden.setItems(items);

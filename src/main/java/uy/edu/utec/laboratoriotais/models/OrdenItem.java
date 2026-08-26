@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class OrdenItem {
     private Integer cantidad;
     private String productoId;
+    private Double precioUnitario;
 }
