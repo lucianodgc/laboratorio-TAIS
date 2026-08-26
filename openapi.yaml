@@ -41,7 +41,7 @@ paths:
                   stock: 15
                   imagenes:
                     - "https://cdn.example.com/img/notebook-1.jpg"
-                    - "https://cdn.example.com/img/notebook-2.jpg
+                    - "https://cdn.example.com/img/notebook-2.jpg"
   
   post:
       tags: [Productos]
