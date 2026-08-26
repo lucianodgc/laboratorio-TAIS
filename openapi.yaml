@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: API de Productos y Ordenes
+  description: >
+    API REST para dar soporte a la venta de artículos, tanto presencial como
+    por pedidos web. Expone los recursos Productos y Ordenes bajo un estilo
+    arquitectónico de microservicios.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Entorno local (Docker)
+
+tags:
+  - name: Productos
+  - name: Ordenes
+
+paths:
+
+  /api/productos:
+    get:
+      tags:
+        - Productos
+      summary: Listar productos
+      description: Devuelve un listado de todos los productos disponibles.
+      operationId: listarProductos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+                example:
+                - id: "65a1f0c2e4b0a1a2b3c4d5e6"
+                  nombre: "Notebook Lenovo ThinkPad"
+                  descripcion: "Notebook Intel i7 16GB RAM"
+                  precioUnitario: 1250.50
+                  stock: 15
+                  imagenes:
+                    - "https://cdn.example.com/img/notebook-1.jpg"
+                    - "https://cdn.example.com/img/notebook-2.jpg
+  
+  post:
+      tags: [Productos]
+      summary: Crear un nuevo producto
+      operationId: crearProducto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdGenerado'
+              example:
+                id: "65a1f0c2e4b0a1a2b3c4d5e6"
+        '400':
+          description: Datos inválidos para crear el producto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/productos/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ProductoId'
+
+    get:
+      tags: [Productos]
+      summary: Obtener un producto por identificador
+      operationId: obtenerProducto
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        '404':
+          description: El producto no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags: [Productos]
+      summary: Reemplazar todos los datos de un producto existente
+      operationId: reemplazarProducto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '404':
+          description: El producto no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags: [Productos]
+      summary: Actualizar parcialmente un producto existente
+      operationId: actualizarProductoParcial
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoPatch'
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensaje'
+        '404':
+          description: El producto no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
