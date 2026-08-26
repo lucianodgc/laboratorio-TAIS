@@ -1,5 +1,6 @@
 package uy.edu.utec.laboratoriotais.dtos;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({ "id", "nombre", "descripcion", "precio", "stock", "imagenes" })
 public class ProductoDTO {
     private String id;
     @NotBlank

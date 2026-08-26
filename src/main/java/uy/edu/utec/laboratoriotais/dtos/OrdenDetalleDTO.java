@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({ "id", "email", "direccion", "telefono", "estado", "fechaCreacion", "items" })
-public class OrdenDTO {
+public class OrdenDetalleDTO {
     private String id;
     @Email
     private String email;
@@ -29,9 +29,9 @@ public class OrdenDTO {
     private LocalDateTime fechaCreacion;
     @NotEmpty
     @Valid
-    private List<OrdenItemDTO> items;
+    private List<OrdenItemDetalleDTO> items;
 
-    public OrdenDTO(String email, String direccion, String telefono, Estado estado, LocalDateTime fechaCreacion, List<OrdenItemDTO> items) {
+    public OrdenDetalleDTO(String email, String direccion, String telefono, Estado estado, LocalDateTime fechaCreacion, List<OrdenItemDetalleDTO> items) {
         this.email = email;
         this.direccion = direccion;
         this.telefono = telefono;

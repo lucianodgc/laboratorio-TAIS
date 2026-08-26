@@ -3,6 +3,7 @@ package uy.edu.utec.laboratoriotais.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import uy.edu.utec.laboratoriotais.dtos.ProductoDTO;
 import uy.edu.utec.laboratoriotais.models.Producto;
@@ -17,6 +18,7 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
+    @Transactional
     public ProductoDTO createProducto(ProductoDTO dto){
         if (productoRepository.existsByNombre(dto.getNombre())) {
             throw new ResponseStatusException(
