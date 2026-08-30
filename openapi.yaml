@@ -4,7 +4,7 @@ info:
   description: >
     API REST para dar soporte a la venta de artículos, tanto presencial como
     por pedidos web. Expone los recursos Productos y Ordenes bajo un estilo
-    arquitectónico de microservicios.
+    arquitectónico de microservicios
   version: 1.0.0
 
 servers:
@@ -385,86 +385,8 @@ components:
           items:
             $ref: '#/components/schemas/OrdenProducto'
 
-    OrdenInput:
-      type: object
-      required:
-        - email
-        - direccionEnvio
-        - telefono
-        - productos
-      properties:
-        email:
-          type: string
-          format: email
-          example: "cliente@email.com"
-        direccionEnvio:
-          type: string
-          example: "Av. Italia 3333, Maldonado"
-        telefono:
-          type: string
-          example: "+59899111222"
-        productos:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/OrdenProducto'
+    
+          
 
-    OrdenDetalleProducto:
-      type: object
-      description: Detalle completo del producto solicitado junto a la cantidad pedida
-      properties:
-        producto:
-          $ref: '#/components/schemas/Producto'
-        cantidad:
-          type: integer
-          example: 2
 
-    OrdenDetalle:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Identificador generado por MongoDB (ObjectId)
-          example: "65b2a1d3f5c0b2b3c4d5e6f7"
-        email:
-          type: string
-          format: email
-          example: "cliente@email.com"
-        direccionEnvio:
-          type: string
-          example: "Av. Italia 3333, Maldonado"
-        telefono:
-          type: string
-          example: "+59899111222"
-        estado:
-          type: string
-          example: "Created"
-        fechaCreacion:
-          type: string
-          format: date-time
-          example: "2026-06-21T14:30:00-03:00"
-        productos:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrdenDetalleProducto'
 
-    IdGenerado:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "65a1f0c2e4b0a1a2b3c4d5e6"
-
-    Mensaje:
-      type: object
-      properties:
-        mensaje:
-          type: string
-          example: "Operación realizada exitosamente"
-
-    Error:
-      type: object
-      properties:
-        mensaje:
-          type: string
-          example: "El recurso solicitado no existe"
