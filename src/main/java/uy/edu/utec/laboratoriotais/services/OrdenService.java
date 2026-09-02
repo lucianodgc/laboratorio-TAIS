@@ -29,7 +29,9 @@ public class OrdenService {
         }
 
         for (OrdenItemDTO itemDTO : dto.getItems()) {
-            ProductoDTO producto = productoService.findProducto(itemDTO.getProductoId());
+            ProductoDTO producto = productoService.findProductoOptional(itemDTO.getProductoId()).orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Producto no encontrado con ID: " + itemDTO.getProductoId()
+            ));
             if (producto.getStock() < itemDTO.getCantidad()) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,

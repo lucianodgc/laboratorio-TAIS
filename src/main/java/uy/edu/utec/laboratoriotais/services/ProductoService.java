@@ -11,6 +11,7 @@ import uy.edu.utec.laboratoriotais.repositories.ProductoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +41,12 @@ public class ProductoService {
         return productos.stream().map(this::mapToDTO).toList();
     }
 
+    public Optional<ProductoDTO> findProductoOptional(String id){
+        return productoRepository.findById(id).map(this::mapToDTO);
+    }
+
     public ProductoDTO findProducto(String id){
-        return productoRepository.findById(id)
-                .map(this::mapToDTO)
+        return findProductoOptional(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Producto no encontrado con ID: " + id
                 ));
