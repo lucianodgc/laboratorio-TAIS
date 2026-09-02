@@ -9,7 +9,7 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://root:root@mongodb:27017/laboratorio_db?authSource=admin
 
   mongodb:
-    image: mongo:8
+    image: mongo:7
     ports:
       - "27017:27017"
     environment:
