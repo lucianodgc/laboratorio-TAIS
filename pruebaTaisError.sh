@@ -7,11 +7,11 @@ curl -i \
     "telefono": "099123456",
     "items": [
       {
-        "productoId": "ID_REAL_DEL_PRODUCTO", 
+        "productoId": "6a987af03aecdaffe236d635", 
         "cantidad": 999
       }
     ]
   }' \
   http://localhost:8080/api/ordenes
 
-  # En producto productoId ponemos el id real del producto que queremos probar
+ 
