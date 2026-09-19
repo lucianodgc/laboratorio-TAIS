@@ -12,6 +12,7 @@ import uy.edu.utec.laboratoriotais.models.OrdenItem;
 import uy.edu.utec.laboratoriotais.repositories.OrdenRepository;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -19,32 +20,18 @@ import java.util.List;
 public class OrdenService {
 
     private final OrdenRepository ordenRepository;
+    private final OrdenPublisherService ordenPublisherService;
     private final ProductoService productoService;
 
-    @Transactional
     public OrdenDTO createOrden(OrdenDTO dto){
 
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La orden debe contener al menos un ítem");
         }
 
-        for (OrdenItemDTO itemDTO : dto.getItems()) {
-            ProductoDTO producto = productoService.findProductoOptional(itemDTO.getProductoId()).orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Producto no encontrado con ID: " + itemDTO.getProductoId()
-            ));
-            if (producto.getStock() < itemDTO.getCantidad()) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Stock insuficiente para el producto ID: " + itemDTO.getProductoId()
-                );
-            }
-        }
-
         List<OrdenItem> items = dto.getItems().stream().map(itemDTO -> {
-            ProductoDTO producto = productoService.findProducto(itemDTO.getProductoId());
-
-            producto.setStock(producto.getStock() - itemDTO.getCantidad());
-            productoService.patchProducto(producto.getId(), producto);
+            ProductoDTO producto = productoService.findProductoOptional(itemDTO.getProductoId()).orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Producto no encontrado con ID: " + itemDTO.getProductoId()));
 
             Double precio = (producto.getPrecio() != null) ? producto.getPrecio() : 0.0;
             return new OrdenItem(itemDTO.getCantidad(), itemDTO.getProductoId(), precio);
@@ -54,10 +41,20 @@ public class OrdenService {
         orden.setEmail(dto.getEmail());
         orden.setDireccion(dto.getDireccion());
         orden.setTelefono(dto.getTelefono());
-        orden.setEstado(Estado.CREADO);
+        orden.setEstado(Estado.CREATED);
         orden.setFechaCreacion(LocalDateTime.now());
         orden.setItems(items);
-        ordenRepository.save(orden);
+
+        orden = ordenRepository.save(orden);
+
+        OrdenEventoDTO evento = new OrdenEventoDTO(
+                orden.getId(),
+                orden.getEstado(),
+                OffsetDateTime.now()
+        );
+
+        ordenPublisherService.publicarOrdenCreada(evento);
+
         return mapToDTO(orden);
     }
 
@@ -80,6 +77,7 @@ public class OrdenService {
 
         List<OrdenItemDetalleDTO> itemsDetalle = orden.getItems().stream().map(item -> {
             ProductoDTO productoDTO = productoService.findProducto(item.getProductoId());
+            productoDTO.setPrecio(item.getPrecioUnitario());
             return new OrdenItemDetalleDTO(productoDTO, item.getCantidad());
         }).toList();
 

@@ -19,19 +19,14 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
-    @Transactional
     public ProductoDTO createProducto(ProductoDTO dto){
         if (productoRepository.existsByNombre(dto.getNombre())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Ya existe un producto registrado con ese nombre"
             );
         }
-        Producto producto = new Producto();
-        producto.setNombre(dto.getNombre());
-        producto.setDescripcion(dto.getDescripcion());
-        producto.setPrecio(dto.getPrecio());
-        producto.setStock(dto.getStock());
-        producto.setImagenes(dto.getImagenes());
+
+        Producto producto = mapToEntity(dto);
         productoRepository.save(producto);
         return mapToDTO(producto);
     }

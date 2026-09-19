@@ -1,6 +1,7 @@
 package uy.edu.utec.laboratoriotais.models;
 
 public enum Estado {
-    CREADO,
-    CANCELADO
+    CREATED,
+    READY_TO_DELIVERY,
+    NO_STOCK
 }

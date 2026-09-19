@@ -1,15 +1,32 @@
 services:
-  app:
+  app-ventas:
     build: .
+    container_name: app_ventas
     ports:
       - "8080:8080"
     depends_on:
       - mongodb
+      - rabbitmq
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://root:root@mongodb:27017/laboratorio_db?authSource=admin
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_PROFILES_ACTIVE: api
+
+  app-procesamiento:
+    build: .
+    container_name: app_procesamiento
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://root:root@mongodb:27017/laboratorio_db?authSource=admin
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SERVER_PORT: 8082
+      SPRING_PROFILES_ACTIVE: worker
 
   mongodb:
     image: mongo:7
+    container_name: mongodb_lab
     ports:
       - "27017:27017"
     environment:
@@ -20,14 +37,24 @@ services:
 
   mongo-express:
     image: mongo-express
-    restart: always
+    container_name: mongo_express_lab
+    restart: no
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongodb:27017/?authSource=admin
       ME_CONFIG_BASICAUTH_ENABLED: true
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: root
+    depends_on:
+      - mongodb
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: broker_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   mongodb_data:

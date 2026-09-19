@@ -43,11 +43,11 @@ class LaboratorioTaisApplicationTests {
 
         productoDto = productoService.createProducto(productoDto);
 
-        List<OrdenItemDTO> ordenItemDtos = List.of(new OrdenItemDTO(productoDto.getId(), 160));
+        //List<OrdenItemDTO> ordenItemDtos = List.of(new OrdenItemDTO(productoDto.getId(), 160));
 
-        OrdenDTO ordenDto = new OrdenDTO("lucianodg.candido@gmail.com", "Playa Verde", "092098912", null, null, ordenItemDtos);
+        //OrdenDTO ordenDto = new OrdenDTO("lucianodg.candido@gmail.com", "Playa Verde", "092098912", null, null, ordenItemDtos);
 
-        ordenService.createOrden(ordenDto);
+        //ordenService.createOrden(ordenDto);
 
         List<ProductoDTO> productos = productoService.findProductos();
         for (ProductoDTO producto : productos) {
