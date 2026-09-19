@@ -5,22 +5,32 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mongodb
-      - rabbitmq
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://root:root@mongodb:27017/laboratorio_db?authSource=admin
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
       SPRING_PROFILES_ACTIVE: api
 
   app-procesamiento:
     build: .
     container_name: app_procesamiento
     depends_on:
-      - mongodb
-      - rabbitmq
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://root:root@mongodb:27017/laboratorio_db?authSource=admin
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
       SERVER_PORT: 8082
       SPRING_PROFILES_ACTIVE: worker
 
@@ -34,6 +44,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongo-express:
     image: mongo-express
@@ -47,7 +62,8 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: root
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -55,6 +71,14 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mongodb_data:
