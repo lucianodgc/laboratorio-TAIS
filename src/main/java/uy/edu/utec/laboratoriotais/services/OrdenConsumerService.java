@@ -11,6 +11,7 @@ import uy.edu.utec.laboratoriotais.repositories.OrdenRepository;
 import uy.edu.utec.laboratoriotais.repositories.ProductoRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,14 +54,15 @@ public class OrdenConsumerService {
                 producto.setStock(producto.getStock() - item.getCantidad());
                 productoRepository.save(producto);
 
+                double subtotal = producto.getPrecio() * item.getCantidad();
+                montoTotal = montoTotal + subtotal;
+
                 FacturaItem fItem = new FacturaItem();
                 fItem.setProductoId(producto.getId());
                 fItem.setCantidad(item.getCantidad());
                 fItem.setPrecioUnitario(producto.getPrecio());
+                fItem.setSubtotal(subtotal);
                 facturaItems.add(fItem);
-
-                double subtotal = producto.getPrecio() * item.getCantidad();
-                montoTotal = montoTotal + subtotal;
             }
 
             orden.setEstado(Estado.READY_TO_DELIVERY);
@@ -68,6 +70,7 @@ public class OrdenConsumerService {
 
             Factura factura = new Factura();
             factura.setOrdenId(orden.getId());
+            factura.setFechaEmision(LocalDateTime.now());
             factura.setItems(facturaItems);
             factura.setMontoTotal(montoTotal);
             facturaRepository.save(factura);

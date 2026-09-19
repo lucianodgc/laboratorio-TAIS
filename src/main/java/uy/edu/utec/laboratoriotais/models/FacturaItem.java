@@ -11,4 +11,5 @@ public class FacturaItem {
     private String productoId;
     private Integer cantidad;
     private Double precioUnitario;
+    private Double subtotal;
 }

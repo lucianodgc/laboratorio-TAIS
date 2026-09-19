@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -17,4 +18,5 @@ public class Factura {
     private String ordenId;
     private List<FacturaItem> items;
     private Double montoTotal;
+    private LocalDateTime fechaEmision;
 }
