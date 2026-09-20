@@ -195,7 +195,7 @@ paths:
                   email: "cliente@email.com"
                   direccion: "Av. Italia 3333, Maldonado"
                   telefono: "+59899111222"
-                  estado: "CREADO"
+                  estado: "CREATED"
                   fechaCreacion: "2026-06-21T14:30:00-03:00"
                   items:
                     - productoId: "65a1f0c2e4b0a1a2b3c4d5e6"
@@ -206,6 +206,10 @@ paths:
     post:
       tags: [Ordenes]
       summary: Crear una nueva orden de compra
+      description: >
+        Crea la orden en estado CREATED y publica un evento en RabbitMQ para
+        que el servicio de procesamiento verifique stock de forma asíncrona
+        y la marque como READY_TO_DELIVERY o NO_STOCK.
       operationId: crearOrden
       requestBody:
         required: true
@@ -215,7 +219,7 @@ paths:
               $ref: '#/components/schemas/OrdenInput'
       responses:
         '201':
-          description: Orden creada exitosamente
+          description: Orden creada exitosamente en estado CREATED
           content:
             application/json:
               schema:
@@ -233,8 +237,9 @@ paths:
                   email: "debe ser una dirección de correo con formato correcto"
         '409':
           description: >
-            Stock insuficiente para alguno de los productos solicitados,
-            o alguno de los productos indicados no existe
+            Alguno de los productoId indicados no existe. NOTA: la verificación
+            de stock ya no ocurre acá — se movió al servicio de procesamiento
+            asíncrono, que marca la orden como NO_STOCK si corresponde.
           content:
             application/json:
               schema:
@@ -242,7 +247,7 @@ paths:
               example:
                 timestamp: "2026-08-30T19:30:35.407942"
                 status: 409
-                mensaje: "Stock insuficiente para el producto '65a1f0c2e4b0a1a2b3c4d5e6'. Disponible: 3, solicitado: 5"
+                mensaje: "Producto no encontrado con ID: 65a1f0c2e4b0a1a2b3c4d5e6"
 
   /api/ordenes/{id}:
     parameters:
@@ -428,8 +433,13 @@ components:
           example: "+59899111222"
         estado:
           type: string
-          enum: [CREADO, CANCELADO]
-          example: "CREADO"
+          description: >
+            CREATED: recién creada, pendiente de procesamiento asíncrono.
+            READY_TO_DELIVERY: el servicio de procesamiento confirmó stock
+            y descontó las cantidades. NO_STOCK: no había stock suficiente
+            para alguno de los productos solicitados.
+          enum: [CREATED, READY_TO_DELIVERY, NO_STOCK]
+          example: "CREATED"
         fechaCreacion:
           type: string
           format: date-time
@@ -492,8 +502,8 @@ components:
           example: "+59899111222"
         estado:
           type: string
-          enum: [CREADO, CANCELADO]
-          example: "CREADO"
+          enum: [CREATED, READY_TO_DELIVERY, NO_STOCK]
+          example: "CREATED"
         fechaCreacion:
           type: string
           format: date-time
