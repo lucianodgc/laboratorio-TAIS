@@ -18,6 +18,5 @@ public class OrdenPublisherService {
                 RabbitMQConfig.ROUTING_KEY_ORDENES,
                 evento
         );
-        System.out.println("-> Evento de orden publicado en RabbitMQ: " + evento.getId());
     }
 }

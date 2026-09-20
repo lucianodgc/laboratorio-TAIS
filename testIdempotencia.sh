@@ -100,7 +100,7 @@ echo ""
 echo "4. Reenviando el mismo evento a RabbitMQ..."
 
 rabbit_response=$(curl -s \
-  -u guest:guest \
+  -u admin:admin \
   -H "Content-Type: application/json" \
   -X POST \
   -d "{
