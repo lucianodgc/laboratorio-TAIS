@@ -301,6 +301,47 @@ paths:
                 status: 404
                 mensaje: "La orden con id 65b2a1d3f5c0b2b3c4d5e6f7 no existe"
 
+  /api/ordenes/{id}/factura:
+    parameters:
+      - $ref: '#/components/parameters/OrdenId'
+
+    get:
+      tags: [Ordenes]
+      summary: Obtener la factura generada para una orden
+      description: >
+        Solo existe si el servicio de procesamiento asíncrono ya marcó la
+        orden como READY_TO_DELIVERY. Si la orden sigue en CREATED o terminó
+        en NO_STOCK, no hay factura y este endpoint responde 404.
+      operationId: obtenerFacturaDeOrden
+      responses:
+        '200':
+          description: Factura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Factura'
+        '404':
+          description: >
+            La orden no existe, o existe pero todavía no tiene una factura
+            generada (está en CREATED o en NO_STOCK)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorSimple'
+              examples:
+                ordenNoExiste:
+                  summary: La orden no existe
+                  value:
+                    timestamp: "2026-08-30T19:30:35.407942"
+                    status: 404
+                    mensaje: "Orden no encontrada con ID: 65b2a1d3f5c0b2b3c4d5e6f7"
+                sinFactura:
+                  summary: La orden existe pero no tiene factura todavía
+                  value:
+                    timestamp: "2026-08-30T19:30:35.407942"
+                    status: 404
+                    mensaje: "La orden con ID 65b2a1d3f5c0b2b3c4d5e6f7 todavía no tiene una factura generada"
+
 components:
 
   parameters:
@@ -512,6 +553,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrdenDetalleItem'
+
+    FacturaItem:
+      type: object
+      description: Un ítem facturado, con el precio unitario congelado al momento del procesamiento
+      properties:
+        productoId:
+          type: string
+          description: Identificador del producto (ObjectId de MongoDB)
+          example: "65a1f0c2e4b0a1a2b3c4d5e6"
+        cantidad:
+          type: integer
+          example: 2
+        precioUnitario:
+          type: number
+          format: double
+          description: Precio del producto en el momento en que se procesó la orden
+          example: 1250.50
+        subtotal:
+          type: number
+          format: double
+          description: Calculado como cantidad × precioUnitario (no se persiste, se calcula al responder)
+          example: 2501.00
+
+    Factura:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador generado por MongoDB (ObjectId)
+          example: "65c3b2e4f6d1c3d4e5f6a7b8"
+        ordenId:
+          type: string
+          description: Identificador de la orden facturada
+          example: "65b2a1d3f5c0b2b3c4d5e6f7"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacturaItem'
+        montoTotal:
+          type: number
+          format: double
+          description: Suma de los subtotales de todos los items
+          example: 2501.00
 
     ErrorSimple:
       type: object

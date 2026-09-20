@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uy.edu.utec.laboratoriotais.dtos.FacturaDTO;
 import uy.edu.utec.laboratoriotais.dtos.OrdenDTO;
 import uy.edu.utec.laboratoriotais.dtos.OrdenDetalleDTO;
+import uy.edu.utec.laboratoriotais.services.FacturaService;
 import uy.edu.utec.laboratoriotais.services.OrdenService;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class OrdenController {
 
     private final OrdenService ordenService;
+    private final FacturaService facturaService;
 
     @GetMapping()
     public ResponseEntity<List<OrdenDTO>> getAllOrdenes() {
@@ -31,6 +34,11 @@ public class OrdenController {
     @GetMapping("/{id}/detalle")
     public ResponseEntity<OrdenDetalleDTO> getOrdenDetalle(@PathVariable String id) {
         return ResponseEntity.ok(ordenService.findOrdenDetalle(id));
+    }
+
+    @GetMapping("/{id}/factura")
+    public ResponseEntity<FacturaDTO> getFacturaDeOrden(@PathVariable String id) {
+        return ResponseEntity.ok(facturaService.findFacturaPorOrden(id));
     }
 
     @PostMapping()

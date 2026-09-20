@@ -16,6 +16,7 @@ services:
       SPRING_RABBITMQ_USERNAME: admin
       SPRING_RABBITMQ_PASSWORD: admin
       SPRING_PROFILES_ACTIVE: api
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: TRACE
 
   app-procesamiento:
     build: .
