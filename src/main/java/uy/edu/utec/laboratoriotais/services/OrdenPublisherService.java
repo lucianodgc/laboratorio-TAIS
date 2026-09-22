@@ -2,11 +2,13 @@ package uy.edu.utec.laboratoriotais.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uy.edu.utec.laboratoriotais.config.RabbitMQConfig;
 import uy.edu.utec.laboratoriotais.dtos.OrdenEventoDTO;
 
 @Service
+@Profile("api")
 @RequiredArgsConstructor
 public class OrdenPublisherService {
 

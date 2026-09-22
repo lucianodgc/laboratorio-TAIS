@@ -2,6 +2,7 @@ package uy.edu.utec.laboratoriotais.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ordenes")
+@Profile("api")
 @RequiredArgsConstructor
 public class OrdenController {
 

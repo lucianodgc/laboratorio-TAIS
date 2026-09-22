@@ -2,6 +2,7 @@ package uy.edu.utec.laboratoriotais.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uy.edu.utec.laboratoriotais.config.RabbitMQConfig;
 import uy.edu.utec.laboratoriotais.dtos.OrdenEventoDTO;
@@ -10,12 +11,12 @@ import uy.edu.utec.laboratoriotais.repositories.FacturaRepository;
 import uy.edu.utec.laboratoriotais.repositories.OrdenRepository;
 import uy.edu.utec.laboratoriotais.repositories.ProductoRepository;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Profile("worker")
 @RequiredArgsConstructor
 public class OrdenConsumerService {
 

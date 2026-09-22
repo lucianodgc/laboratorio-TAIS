@@ -176,8 +176,7 @@ if [ "$status" -ne 200 ]; then
 fi
 
 monto_total=$(jq -r '.montoTotal' "$response_file")
-
-monto_esperado=$(echo "1000 * $CANTIDAD" | bc)
+monto_esperado=$((1000 * CANTIDAD))
 
 echo ""
 echo "Precio unitario: 1000"
@@ -185,7 +184,9 @@ echo "Cantidad:        $CANTIDAD"
 echo "Monto esperado:  $monto_esperado"
 echo "Monto factura:   $monto_total"
 
-if [ "$(echo "$monto_total == $monto_esperado" | bc)" -eq 1 ]; then
+es_monto_correcto=$(jq -n --argjson total "$monto_total" --argjson esperado "$monto_esperado" '$total == $esperado')
+
+if [ "$es_monto_correcto" = "true" ]; then
     echo "✓ PASS - El monto total de la factura es correcto"
 else
     echo "✗ FAIL - El monto total de la factura es incorrecto"
@@ -196,8 +197,9 @@ else
 fi
 
 subtotal=$(jq -r '.items[0].subtotal' "$response_file")
+es_subtotal_correcto=$(jq -n --argjson sub "$subtotal" --argjson esperado "$monto_esperado" '$sub == $esperado')
 
-if [ "$(echo "$subtotal == $monto_esperado" | bc)" -eq 1 ]; then
+if [ "$es_subtotal_correcto" = "true" ]; then
     echo "✓ PASS - El subtotal es correcto"
 else
     echo "✗ FAIL - El subtotal es incorrecto"

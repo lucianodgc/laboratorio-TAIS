@@ -1,6 +1,7 @@
 package uy.edu.utec.laboratoriotais.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Profile("api")
 @RequiredArgsConstructor
 public class ProductoService {
 

@@ -1,5 +1,6 @@
 package uy.edu.utec.laboratoriotais.exceptions;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Profile("api")
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
