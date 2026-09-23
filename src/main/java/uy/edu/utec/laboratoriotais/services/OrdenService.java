@@ -1,6 +1,7 @@
 package uy.edu.utec.laboratoriotais.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.AmqpException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,13 +50,13 @@ public class OrdenService {
 
         orden = ordenRepository.save(orden);
 
-        OrdenEventoDTO evento = new OrdenEventoDTO(
-                orden.getId(),
-                orden.getEstado(),
-                OffsetDateTime.now()
-        );
-
-        ordenPublisherService.publicarOrdenCreada(evento);
+        try {
+            OrdenEventoDTO evento = new OrdenEventoDTO(orden.getId(), orden.getEstado(), OffsetDateTime.now());
+            ordenPublisherService.publicarOrdenCreada(evento);
+        } catch (AmqpException e) {
+            orden.setEstado(Estado.PENDING_PUBLISH);
+            ordenRepository.save(orden);
+        }
 
         return mapToDTO(orden);
     }

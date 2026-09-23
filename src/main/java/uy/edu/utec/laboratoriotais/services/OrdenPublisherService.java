@@ -1,6 +1,7 @@
 package uy.edu.utec.laboratoriotais.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,14 @@ public class OrdenPublisherService {
     private final RabbitTemplate rabbitTemplate;
 
     public void publicarOrdenCreada(OrdenEventoDTO evento) {
-        rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_ORDENES,
-                RabbitMQConfig.ROUTING_KEY_ORDENES,
-                evento
-        );
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE_ORDENES,
+                    RabbitMQConfig.ROUTING_KEY_ORDENES,
+                    evento
+            );
+        } catch (AmqpException e) {
+            throw e;
+        }
     }
 }
