@@ -54,12 +54,12 @@ services:
   mongo-express:
     image: mongo-express
     container_name: mongo_express_lab
-    restart: no
+    restart: "no"
     ports:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://root:root@mongodb:27017/?authSource=admin
-      ME_CONFIG_BASICAUTH_ENABLED: true
+      ME_CONFIG_BASICAUTH_ENABLED: "true"
       ME_CONFIG_BASICAUTH_USERNAME: root
       ME_CONFIG_BASICAUTH_PASSWORD: root
     depends_on:
@@ -81,5 +81,17 @@ services:
       timeout: 5s
       retries: 5
 
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: jenkins_lab
+    user: root
+    ports:
+      - "8083:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
 volumes:
   mongodb_data:
+  jenkins_data:
