@@ -82,7 +82,7 @@ services:
       retries: 5
 
   jenkins:
-    image: jenkins/jenkins:lts-jdk17
+    image: jenkins/jenkins:lts-jdk21
     container_name: jenkins_lab
     user: root
     ports:
@@ -91,6 +91,7 @@ services:
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/app
 
 volumes:
   mongodb_data:
